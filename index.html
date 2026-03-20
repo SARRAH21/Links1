@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MathCred — Clean Math Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500&family=IM+Fell+English:ital@1&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0e0c0a;
+      --card:        rgba(18, 16, 13, 0.82);
+      --surface:     rgba(255,255,255,0.06);
+      --surface-h:   rgba(255,255,255,0.10);
+      --border:      rgba(255,255,255,0.10);
+      --border-h:    rgba(255,255,255,0.22);
+      --ink:         #f0ece4;
+      --ink-soft:    #b8b0a4;
+      --ink-muted:   #7a7268;
+      --sage:        #6a9b6e;
+      --sage-pale:   rgba(106,155,110,0.12);
+      --sage-border: rgba(106,155,110,0.28);
+      --featured-bg: #f0ece4;
+      --featured-ink:#0e0c0a;
+      --shadow-sm:   0 2px 12px rgba(0,0,0,.35);
+      --shadow-md:   0 8px 32px rgba(0,0,0,.5);
+      --radius:      14px;
+      --serif:       'Instrument Serif', Georgia, serif;
+      --math:        'IM Fell English', 'Georgia', serif;
+      --sans:        'Geist', system-ui, sans-serif;
+      --max-w:       420px;
+      --ease:        cubic-bezier(.22,.61,.36,1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      font-family: var(--sans);
+      color: var(--ink);
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 72px 20px 60px;
+      -webkit-font-smoothing: antialiased;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ════════════════════════════════════════
+       BACKGROUND — SVG math equations layer
+       ════════════════════════════════════════ */
+    .bg-math {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .bg-math svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* vignette so centre stays readable */
+    .bg-vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 70% at 50% 50%,
+          rgba(14,12,10,0.78) 0%,
+          rgba(14,12,10,0.55) 50%,
+          rgba(14,12,10,0.15) 100%);
+    }
+
+    /* ════════════════════
+       PAGE WRAPPER
+       ════════════════════ */
+    .page {
+      width: 100%;
+      max-width: var(--max-w);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+      opacity: 0;
+      animation: pageIn 1s .08s var(--ease) forwards;
+    }
+
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    /* ════════════════════
+       HEADER
+       ════════════════════ */
+    header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 44px;
+      text-align: center;
+      animation: fadeUp .75s .12s var(--ease) both;
+    }
+
+    .avatar-wrap {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      margin-bottom: 20px;
+    }
+
+    /* glowing halo */
+    .avatar-halo {
+      position: absolute;
+      inset: -16px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(106,155,110,.22) 0%, transparent 70%);
+      animation: haloPulse 4s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    .avatar-ring {
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 1px solid rgba(106,155,110,.2);
+      animation: haloPulse 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes haloPulse {
+      from { transform: scale(.94); opacity: .5; }
+      to   { transform: scale(1.08); opacity: 1; }
+    }
+
+    .avatar {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 2.5px solid rgba(255,255,255,.18);
+      box-shadow: 0 0 0 1px rgba(255,255,255,.06), var(--shadow-sm);
+      overflow: hidden;
+      background: linear-gradient(140deg, #2a2620 0%, #1a1814 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .avatar-initial {
+      font-family: var(--serif);
+      font-size: 2.2rem;
+      font-style: italic;
+      color: #c8c0b0;
+      line-height: 1;
+      user-select: none;
+    }
+
+    .avatar-badge {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 22px;
+      height: 22px;
+      background: var(--sage);
+      border-radius: 50%;
+      border: 2.5px solid var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 6px rgba(106,155,110,.5);
+      z-index: 3;
+    }
+
+    .brand-name {
+      font-family: var(--serif);
+      font-size: 1.75rem;
+      letter-spacing: -.025em;
+      color: var(--ink);
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .brand-tagline {
+      font-size: .8rem;
+      font-weight: 300;
+      color: var(--ink-muted);
+      letter-spacing: .05em;
+    }
+
+    .subject-pills {
+      display: flex;
+      gap: 6px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .pill {
+      font-size: .65rem;
+      font-weight: 400;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 4px 11px;
+    }
+
+    /* ════════════════════
+       LINK BUTTONS
+       ════════════════════ */
+    .links {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .link-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 15px 18px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      text-decoration: none;
+      color: var(--ink);
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition:
+        transform .24s var(--ease),
+        box-shadow .24s var(--ease),
+        border-color .22s,
+        background .22s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* shimmer on hover */
+    .link-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(108deg,
+        transparent 35%,
+        rgba(255,255,255,.07) 50%,
+        transparent 65%);
+      transform: translateX(-120%);
+      transition: transform .6s ease;
+      pointer-events: none;
+    }
+    .link-btn:hover::after { transform: translateX(120%); }
+
+    .link-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--border-h);
+      background: var(--surface-h);
+    }
+    .link-btn:active {
+      transform: translateY(0) scale(.99);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* sage / free */
+    .link-btn.soft {
+      background: var(--sage-pale);
+      border-color: var(--sage-border);
+    }
+    .link-btn.soft .link-icon-wrap { background: rgba(106,155,110,.14); }
+    .link-btn.soft .link-sublabel  { color: #6a9b6e; }
+
+    /* dark featured — inverted to cream */
+    .link-btn.featured {
+      background: var(--featured-bg);
+      border-color: var(--featured-bg);
+      color: var(--featured-ink);
+      box-shadow: 0 4px 20px rgba(240,236,228,.12);
+    }
+    .link-btn.featured .link-icon-wrap { background: rgba(14,12,10,.08); }
+    .link-btn.featured .link-sublabel  { color: rgba(14,12,10,.45); }
+    .link-btn.featured .link-arrow     { color: rgba(14,12,10,.35); }
+    .link-btn.featured:hover {
+      background: #fff;
+      border-color: #fff;
+      box-shadow: 0 8px 32px rgba(240,236,228,.2);
+    }
+
+    .link-icon-wrap {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .link-text { flex: 1; }
+
+    .link-label {
+      font-size: .88rem;
+      font-weight: 400;
+      letter-spacing: .01em;
+      line-height: 1.3;
+    }
+
+    .link-sublabel {
+      font-size: .71rem;
+      color: var(--ink-muted);
+      margin-top: 2px;
+      font-weight: 300;
+    }
+
+    .link-arrow {
+      color: var(--ink-muted);
+      flex-shrink: 0;
+      transition: transform .2s var(--ease);
+    }
+    .link-btn:hover .link-arrow { transform: translateX(4px); }
+
+    /* ════════════════════
+       DIVIDER
+       ════════════════════ */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 4px 0;
+      animation: fadeUp .55s .33s var(--ease) both;
+    }
+    .divider-line { flex: 1; height: 1px; background: var(--border); }
+    .divider-label {
+      font-size: .66rem;
+      color: var(--ink-muted);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    /* ════════════════════
+       MICRO + FOOTER
+       ════════════════════ */
+    .micro {
+      margin-top: 32px;
+      font-size: .72rem;
+      color: var(--ink-muted);
+      letter-spacing: .06em;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      animation: fadeUp .55s .58s var(--ease) both;
+    }
+    .micro-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,.15); }
+
+    footer {
+      margin-top: 36px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      animation: fadeUp .55s .64s var(--ease) both;
+    }
+
+    .social-row { display: flex; gap: 20px; }
+
+    .social-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .74rem;
+      color: var(--ink-muted);
+      text-decoration: none;
+      transition: color .2s;
+      letter-spacing: .03em;
+    }
+    .social-link:hover { color: var(--ink); }
+
+    .footer-copy { font-size: .62rem; color: rgba(255,255,255,.12); letter-spacing: .08em; text-transform: uppercase; }
+
+    /* ════════════════════
+       STAGGER ANIMATIONS
+       ════════════════════ */
+    .link-btn:nth-child(1) { animation: fadeUp .55s .22s var(--ease) both; }
+    .link-btn:nth-child(2) { animation: fadeUp .55s .28s var(--ease) both; }
+    .link-btn:nth-child(4) { animation: fadeUp .55s .38s var(--ease) both; }
+    .link-btn:nth-child(5) { animation: fadeUp .55s .44s var(--ease) both; }
+    .link-btn:nth-child(6) { animation: fadeUp .55s .49s var(--ease) both; }
+    .link-btn:nth-child(7) { animation: fadeUp .55s .54s var(--ease) both; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    @media (max-width: 440px) {
+      body { padding: 60px 16px 48px; }
+      .avatar, .avatar-wrap { width: 80px; height: 80px; }
+      .avatar-initial { font-size: 1.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════
+     BACKGROUND — math equations in SVG
+     ═══════════════════════════════════ -->
+<div class="bg-math" aria-hidden="true">
+  <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <!-- each equation group: opacity + gentle slow drift -->
+      <style>
+        .eq { font-family: 'IM Fell English', Georgia, serif; fill: rgba(255,255,255,0.045); font-style: italic; }
+        .eq-sm { font-size: 13px; }
+        .eq-md { font-size: 17px; }
+        .eq-lg { font-size: 22px; }
+        .eq-xl { font-size: 28px; }
+        .eq-2xl { font-size: 36px; }
+        .eq-label { font-family: 'Geist', monospace; font-style: normal; fill: rgba(255,255,255,0.028); font-size: 11px; letter-spacing: .12em; }
+
+        /* slow float animations — different for each cluster */
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) rotate(-1deg)} 50%{transform:translate(4px,-8px) rotate(0deg)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) rotate(1.5deg)} 50%{transform:translate(-6px,6px) rotate(-.5deg)} }
+        @keyframes drift3 { 0%,100%{transform:translate(0,0) rotate(-.5deg)} 50%{transform:translate(5px,5px) rotate(.5deg)} }
+        @keyframes drift4 { 0%,100%{transform:translate(0,0) rotate(2deg)} 50%{transform:translate(-4px,-6px) rotate(.5deg)} }
+        @keyframes drift5 { 0%,100%{transform:translate(0,0) rotate(-1.5deg)} 50%{transform:translate(6px,4px) rotate(-1deg)} }
+
+        .d1 { animation: drift1 18s ease-in-out infinite; }
+        .d2 { animation: drift2 22s ease-in-out infinite; }
+        .d3 { animation: drift3 16s ease-in-out infinite; }
+        .d4 { animation: drift4 24s ease-in-out infinite; }
+        .d5 { animation: drift5 20s ease-in-out infinite; }
+      </style>
+    </defs>
+
+    <!-- ── TOP-LEFT CLUSTER ── -->
+    <g class="d1" transform="translate(40, 60)">
+      <text class="eq eq-2xl" x="0" y="0">∫₀^∞ e^{-x²} dx = √π/2</text>
+      <text class="eq eq-md" x="10" y="38">Gaussian integral</text>
+      <text class="eq eq-sm eq-label" x="0" y="58">CALCULUS</text>
+    </g>
+
+    <!-- ── TOP-RIGHT CLUSTER ── -->
+    <g class="d2" transform="translate(62%, 40)">
+      <text class="eq eq-xl" x="0" y="0">e^{iπ} + 1 = 0</text>
+      <text class="eq eq-sm" x="4" y="28">Euler's identity</text>
+    </g>
+
+    <!-- ── RIGHT SIDE ── -->
+    <g class="d3" transform="translate(75%, 200)">
+      <text class="eq eq-lg" x="0" y="0">∑_{n=1}^{∞} 1/n² = π²/6</text>
+      <text class="eq eq-sm" x="0" y="26">Basel problem</text>
+      <text class="eq eq-md" x="0" y="70">lim_{x→0} sin x/x = 1</text>
+    </g>
+
+    <!-- ── BOTTOM-LEFT CLUSTER ── -->
+    <g class="d4" transform="translate(20, 70%)">
+      <text class="eq eq-xl" x="0" y="0">∇ × B = μ₀J + μ₀ε₀ ∂E/∂t</text>
+      <text class="eq eq-sm" x="0" y="28">Maxwell's equations</text>
+      <text class="eq eq-lg" x="0" y="64">F = ma</text>
+      <text class="eq eq-md" x="0" y="96">p = mv, &nbsp; W = ∫F·dx</text>
+    </g>
+
+    <!-- ── BOTTOM-RIGHT CLUSTER ── -->
+    <g class="d2" transform="translate(58%, 72%)">
+      <text class="eq eq-lg" x="0" y="0">P(A|B) = P(B|A)P(A)/P(B)</text>
+      <text class="eq eq-sm" x="0" y="26">Bayes' theorem</text>
+      <text class="eq eq-md" x="0" y="60">σ² = E[(X-μ)²]</text>
+    </g>
+
+    <!-- ── LEFT MID ── -->
+    <g class="d5" transform="translate(8, 38%)">
+      <text class="eq eq-xl" x="0" y="0">x = (-b ± √(b²-4ac)) / 2a</text>
+      <text class="eq eq-sm" x="0" y="28">Quadratic formula</text>
+    </g>
+
+    <!-- ── FAR LEFT TOP ── -->
+    <g class="d3" transform="translate(2%, 22%)">
+      <text class="eq eq-lg" x="0" y="0">d/dx[xⁿ] = nxⁿ⁻¹</text>
+      <text class="eq eq-md" x="0" y="30">∫xⁿ dx = xⁿ⁺¹/(n+1) + C</text>
+    </g>
+
+    <!-- ── TOP MID ── -->
+    <g class="d1" transform="translate(32%, 6%)">
+      <text class="eq eq-lg" x="0" y="0">sin²θ + cos²θ = 1</text>
+      <text class="eq eq-sm" x="0" y="24">tan θ = sin θ / cos θ</text>
+    </g>
+
+    <!-- ── RIGHT TOP ── -->
+    <g class="d4" transform="translate(80%, 8%)">
+      <text class="eq eq-md" x="0" y="0">A = πr²</text>
+      <text class="eq eq-md" x="0" y="28">V = (4/3)πr³</text>
+    </g>
+
+    <!-- ── CENTER SCATTERED (very faint) ── -->
+    <g transform="translate(40%, 32%)" style="opacity:.5">
+      <text class="eq eq-2xl" x="0" y="0">∂²u/∂t² = c²∇²u</text>
+      <text class="eq eq-sm" x="0" y="30">Wave equation</text>
+    </g>
+
+    <g class="d5" transform="translate(22%, 82%)">
+      <text class="eq eq-lg" x="0" y="0">det(A) = ∑ sgn(σ) ∏ aᵢσ(ᵢ)</text>
+    </g>
+
+    <g class="d2" transform="translate(5%, 88%)">
+      <text class="eq eq-md" x="0" y="0">Hψ = Eψ &nbsp; (Schrödinger)</text>
+    </g>
+
+    <g class="d1" transform="translate(68%, 52%)">
+      <text class="eq eq-lg" x="0" y="0">∮ E·dA = Q/ε₀</text>
+      <text class="eq eq-sm" x="0" y="26">Gauss's law</text>
+    </g>
+
+    <!-- ── faint LaTeX source code scattered ── -->
+    <g style="fill:rgba(255,255,255,.018); font-family:'Geist',monospace; font-size:10px;">
+      <text x="3%" y="12%">\int_{-\infty}^{\infty} f(x)\,dx</text>
+      <text x="55%" y="90%">\frac{d}{dx}\left[f(g(x))\right] = f'(g(x))\cdot g'(x)</text>
+      <text x="2%" y="50%">\lim_{n\to\infty}\left(1+\frac{1}{n}\right)^n = e</text>
+      <text x="60%" y="16%">\nabla^2\phi = \rho/\epsilon_0</text>
+      <text x="15%" y="94%">\sum_{k=0}^{n}\binom{n}{k}x^k y^{n-k}=(x+y)^n</text>
+      <text x="72%" y="38%">\vec{F} = q(\vec{E}+\vec{v}\times\vec{B})</text>
+    </g>
+
+    <!-- ── subtle grid of dots (graph paper feel) ── -->
+    <g style="fill:rgba(255,255,255,.018);">
+      <script type="text/javascript">
+        /* dots rendered via JS after load — grid pattern */
+      </script>
+    </g>
+  </svg>
+</div>
+
+<!-- vignette to darken centre for readability -->
+<div class="bg-vignette"></div>
+
+<!-- ═══════════════════
+     PAGE CONTENT
+     ═══════════════════ -->
+<div class="page">
+
+  <header>
+    <div class="avatar-wrap">
+      <div class="avatar-halo"></div>
+      <div class="avatar-ring"></div>
+      <div class="avatar">
+        <span class="avatar-initial">M</span>
+      </div>
+      <div class="avatar-badge">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+          <path d="M2 5l2.2 2.2L8 3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="brand-name">MathCred</div>
+    <div class="brand-tagline">Clean math notes. Clear thinking.</div>
+
+    <div class="subject-pills">
+      <span class="pill">JEE</span>
+      <span class="pill">Boards</span>
+      <span class="pill">LaTeX</span>
+    </div>
+  </header>
+
+  <div class="links">
+
+    <a class="link-btn soft" href="#" target="_blank" rel="noopener">
+      <div class="link-icon-wrap">📘</div>
+      <div class="link-text">
+        <div class="link-label">View Sample Notes</div>
+        <div class="link-sublabel">Free preview — no sign-up needed</div>
+      </div>
+      <svg class="link-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+
+    <a class="link-btn soft" href="#" target="_blank" rel="noopener">
+      <div class="link-icon-wrap">📂</div>
+      <div class="link-text">
+        <div class="link-label">Free Resources</div>
+        <div class="link-sublabel">Formula sheets · quick revision PDFs</div>
+      </div>
+      <svg class="link-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+
+    <div class="divider">
+      <div class="divider-line"></div>
+      <span class="divider-label">Premium</span>
+      <div class="divider-line"></div>
+    </div>
+
+    <a class="link-btn featured" href="#" target="_blank" rel="noopener">
+      <div class="link-icon-wrap">✦</div>
+      <div class="link-text">
+        <div class="link-label">Buy Full Notes</div>
+        <div class="link-sublabel">All chapters · LaTeX · Exam-ready</div>
+      </div>
+      <svg class="link-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+
+    <a class="link-btn" href="#" target="_blank" rel="noopener">
+      <div class="link-icon-wrap">📖</div>
+      <div class="link-text">
+        <div class="link-label">All Chapters</div>
+        <div class="link-sublabel">Browse what's available</div>
+      </div>
+      <svg class="link-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+
+    <a class="link-btn" href="#" target="_blank" rel="noopener">
+      <div class="link-icon-wrap">🎥</div>
+      <div class="link-text">
+        <div class="link-label">YouTube / Reels</div>
+        <div class="link-sublabel">Short explainers & worked problems</div>
+      </div>
+      <svg class="link-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+
+    <a class="link-btn" href="#" target="_blank" rel="noopener">
+      <div class="link-icon-wrap">📩</div>
+      <div class="link-text">
+        <div class="link-label">Contact Me</div>
+        <div class="link-sublabel">Questions, feedback, or requests</div>
+      </div>
+      <svg class="link-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+
+  </div>
+
+  <p class="micro">
+    <span class="micro-dot"></span>
+    Built for clarity. Designed for students.
+    <span class="micro-dot"></span>
+  </p>
+
+  <footer>
+    <div class="social-row">
+      <a class="social-link" href="#" target="_blank" rel="noopener">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5"/>
+          <circle cx="12" cy="12" r="4"/>
+          <circle cx="17.5" cy="6.5" r=".5" fill="currentColor"/>
+        </svg>
+        @mathcred
+      </a>
+      <a class="social-link" href="mailto:hello@mathcred.in">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="m2 7 10 7 10-7"/>
+        </svg>
+        hello@mathcred.in
+      </a>
+    </div>
+    <div class="footer-copy">© 2025 MathCred</div>
+  </footer>
+
+</div>
+
+<!-- draw dot-grid via JS -->
+<script>
+  (function(){
+    const svg = document.querySelector('.bg-math svg');
+    const ns = 'http://www.w3.org/2000/svg';
+    const g = document.createElementNS(ns, 'g');
+    g.setAttribute('style','fill:rgba(255,255,255,.04)');
+    const W = window.innerWidth, H = window.innerHeight;
+    const gapX = 38, gapY = 38, r = 1;
+    for(let x = gapX; x < W; x += gapX){
+      for(let y = gapY; y < H; y += gapY){
+        const c = document.createElementNS(ns,'circle');
+        c.setAttribute('cx', x);
+        c.setAttribute('cy', y);
+        c.setAttribute('r', r);
+        g.appendChild(c);
+      }
+    }
+    svg.appendChild(g);
+  })();
+</script>
+
+</body>
+</html>

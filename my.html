@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Name</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    color: #111;
+    background: #fff;
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 80px 24px;
+  }
+
+  /* ── MONOGRAM ── */
+  .monogram {
+    width: 44px;
+    height: 44px;
+    border: 1.5px solid #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    margin-bottom: 40px;
+    user-select: none;
+  }
+
+  header { margin-bottom: 64px; }
+  header h1 { font-size: 1.1rem; font-weight: 600; margin-bottom: 4px; }
+  header p { font-size: 0.9rem; color: #888; }
+
+  section { margin-bottom: 56px; }
+
+  h2 {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 16px;
+  }
+
+  p { font-size: 0.95rem; color: #333; margin-bottom: 8px; }
+  p:last-child { margin-bottom: 0; }
+
+  ul { list-style: none; }
+  ul li { font-size: 0.95rem; color: #333; padding: 4px 0; }
+  ul li::before { content: "— "; color: #ccc; }
+
+  .projects li {
+    padding: 12px 0;
+    border-top: 1px solid #f0f0f0;
+  }
+  .projects li:last-child { border-bottom: 1px solid #f0f0f0; }
+  .projects li::before { content: none; }
+  .project-name { font-weight: 500; display: block; margin-bottom: 2px; }
+  .project-desc { font-size: 0.85rem; color: #999; display: block; }
+
+  /* ── LINKS WITH ICONS ── */
+  .links li { padding: 6px 0; }
+  .links li::before { content: none; }
+  .links a {
+    font-size: 0.95rem;
+    color: #111;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 1px;
+    transition: border-color 0.15s;
+  }
+  .links a:hover { border-color: #111; }
+  .links a svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: #aaa;
+    transition: color 0.15s;
+  }
+  .links a:hover svg { color: #111; }
+
+  footer {
+    margin-top: 72px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+    font-size: 0.8rem;
+    color: #ccc;
+  }
+</style>
+</head>
+<body>
+
+  <!-- MONOGRAM -->
+  <div class="monogram">YN</div>
+
+  <header>
+    <h1>Your Name</h1>
+    <p>Student · Math · Tech · Builder</p>
+  </header>
+
+  <section>
+    <h2>About</h2>
+    <p>I'm a student interested in mathematics, technology, and building useful things.</p>
+    <p>Right now I'm learning to think more rigorously — through problem solving, reading, and writing code.</p>
+    <p>I want to build tools and systems that help people learn and think better.</p>
+    <p>Most days I'm reading, solving problems, or working on something small.</p>
+  </section>
+
+  <section>
+    <h2>Interests</h2>
+    <ul>
+      <li>Mathematics</li>
+      <li>Technology / AI</li>
+      <li>Chess</li>
+      <li>Content Creation</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Work</h2>
+    <ul class="projects">
+      <li>
+        <span class="project-name">LaTeX Notes</span>
+        <span class="project-desc">Math notes typeset cleanly. Covers competition topics and core concepts.</span>
+      </li>
+      <li>
+        <span class="project-name">AI Projects</span>
+        <span class="project-desc">Small experiments with machine learning, built from scratch when possible.</span>
+      </li>
+      <li>
+        <span class="project-name">Learning System</span>
+        <span class="project-desc">A personal framework for studying — spaced repetition, structured review.</span>
+      </li>
+      <li>
+        <span class="project-name">Content</span>
+        <span class="project-desc">Occasional videos and posts explaining math and tech topics simply.</span>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Links</h2>
+    <ul class="links">
+
+      <li>
+        <a href="#">
+          <!-- Instagram -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+            <circle cx="12" cy="12" r="4"/>
+            <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
+          </svg>
+          Instagram
+        </a>
+      </li>
+
+      <li>
+        <a href="#">
+          <!-- YouTube -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/>
+            <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/>
+          </svg>
+          YouTube
+        </a>
+      </li>
+
+      <li>
+        <a href="#">
+          <!-- Notes / document -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <line x1="10" y1="9" x2="8" y2="9"/>
+          </svg>
+          Notes
+        </a>
+      </li>
+
+      <li>
+        <a href="#">
+          <!-- Contact / mail -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          Contact
+        </a>
+      </li>
+
+    </ul>
+  </section>
+
+  <footer>
+    Building and learning daily.
+  </footer>
+
+</body>
+</html>
